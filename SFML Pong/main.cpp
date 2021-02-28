@@ -10,7 +10,7 @@
 //        {
 //            sf::UdpSocket socket;
 //            //socket.setBlocking(false);
-//            socket.bind(70000+localPlayerIndex); //Receive on 55001
+//            socket.bind(40000+localPlayerIndex); //Receive on 55001
 //            sf::Packet packet;
 //
 //            //Prepare the packet

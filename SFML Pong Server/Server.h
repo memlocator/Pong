@@ -2,6 +2,11 @@
 #include "Timer.h"
 #include <thread>
 
+//Windows related
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
+#include <windows.h>
+
 //Strings & console
 #include <string>
 #include <iostream>
@@ -34,7 +39,7 @@ private:
 	std::vector<ConnectedPlayer> connectedClients;
 
 	unsigned short recievePortUDP = 55002;
-	unsigned short sendPortUDP = 70000;
+	unsigned short sendPortUDP = 40000;
 
 	unsigned short receivePortTCP = 55003;
 
@@ -52,7 +57,7 @@ private:
 	//Network helpers
 	void waitForConnectingPlayers();
 	void initUDPThread();
-	void updateClients();
+	void updateClientsLoop();
 	void setupPorts();
 	bool areAllPlrsConn();
 public:

@@ -57,8 +57,8 @@ public:
             ballY = ball.getPosition().y;
             packet << msgIdentifier << ballX << ballY;
 
-            udpSocket.send(packet, "localhost", (unsigned short)70000 + 0);
-            udpSocket.send(packet, "localhost", (unsigned short)70000 + 1);
+            udpSocket.send(packet, "localhost", (unsigned short)40000 + 0);
+            udpSocket.send(packet, "localhost", (unsigned short)40000 + 1);
 
             for (auto paddle : GameServer::paddles)
             {
@@ -131,9 +131,9 @@ void networkThread()
             GameServer::paddles.at(fromPlayerID).setPosition({ GameServer::paddles.at(fromPlayerID).getPosition().x, y });
 
         if (fromPlayerID == 1)
-            udpSocket.send(packet, "localhost", (unsigned short) 70000 + 0);
+            udpSocket.send(packet, "localhost", (unsigned short) 40000 + 0);
         else
-            udpSocket.send(packet, "localhost", (unsigned short) 70000 + 1);
+            udpSocket.send(packet, "localhost", (unsigned short) 40000 + 1);
         Sleep(1);
     }
 }

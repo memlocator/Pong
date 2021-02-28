@@ -33,6 +33,7 @@ void Game::pollUDP()
                     float paddleYPos = 0.f;
                     int fromPlayerID = -1;
                     packet >> fromPlayerID >> paddleYPos;
+                    
 
                     //Update game state according to new information to client, not super secure 
                     //as the client gets to dictate too much.
@@ -47,7 +48,6 @@ void Game::pollUDP()
                     ball.setPosition({ x, y });
                 }
                     break;
-
                 }
             }
         }
@@ -143,7 +143,6 @@ Game::Game()
 
 void Game::run()
 {
-    std::cout << "Created pong client" << std::endl;
     createArena();
     getPlayerIndex();
     setupUDP();
@@ -154,6 +153,7 @@ void Game::run()
 
     //Change title for window
     window.setTitle(" Pong client " + std::to_string(playerID));
+    pollUDP();
 
     while (window.isOpen()) //Primary game, game and logic loop
     {
@@ -162,7 +162,6 @@ void Game::run()
         {
             //Begin frame
             window.clear();
-            pollUDP();
             handleInput();
             updateElements();
 

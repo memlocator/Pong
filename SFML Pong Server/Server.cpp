@@ -19,7 +19,7 @@ void Server::createArena()
 
 	ball.setPosition({ 200,200 });
 	ball.setSize({ 5,5 });
-	ball.setVelocity({ 1.f, 0.65f });
+	ball.setVelocity({ 2.f, 0.85f });
 }
 
 void Server::waitForConnectingPlayers()
@@ -55,7 +55,7 @@ void Server::waitForConnectingPlayers()
 		tcpSocket.disconnect();
 	}
 
-	std::cout << "Game starting" << std::endl;
+	std::cout << "Game starting." << std::endl;
 
 }
 
@@ -91,6 +91,7 @@ void Server::initUDPThread()
 						break;
 					}
 				}
+
 			}
 		});
 	netPoll.detach();
@@ -104,34 +105,42 @@ int other(int n)
 		return 1;
 }
 
-void Server::updateClients()
+void Server::updateClientsLoop()
 {
-	if (areAllPlrsConn())
+	std::thread netPoll([this]()
 	{
-		sf::Packet packet;
-
-		//Should ideally auto select port instead
-		//Update paddle positions
-		packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[0].playerID << paddles[0].getPosition().y;
-		udpSocket.send(packet, connectedClients[1].ip, sendPortUDP + 1);
-
-		packet.clear();
-
-		packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[1].playerID << paddles[1].getPosition().y;
-		udpSocket.send(packet, connectedClients[0].ip, sendPortUDP);
-		//
-
-		//Update ball position
-		packet.clear();
-		packet << (int)NetworkID::BALL_UPDATE << ball.getPosition().x << ball.getPosition().y;
-
-		for (int i = 0; i < connectedClients.size(); i++)
+		while (running)
 		{
-			udpSocket.send(packet, connectedClients[i].ip, sendPortUDP + i);
-		}
-		//
 
-	}
+			if (areAllPlrsConn())
+			{
+				sf::Packet packet;
+
+				//Should ideally auto select port instead
+				//Update paddle positions
+				packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[0].playerID << paddles[0].getPosition().y;
+				udpSocket.send(packet, connectedClients[1].ip, sendPortUDP + 1);
+
+				packet.clear();
+
+				packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[1].playerID << paddles[1].getPosition().y;
+				udpSocket.send(packet, connectedClients[0].ip, sendPortUDP);
+				//
+
+				//Update ball position
+				packet.clear();
+				packet << (int)NetworkID::BALL_UPDATE << ball.getPosition().x << ball.getPosition().y;
+
+				for (int i = 0; i < connectedClients.size(); i++)
+				{
+					udpSocket.send(packet, connectedClients[i].ip, sendPortUDP + i);
+				}
+				//
+
+			}
+		}
+	});
+	netPoll.detach();
 }
 
 void Server::setupPorts()
@@ -170,6 +179,7 @@ void Server::run()
 
 	initUDPThread();
 	waitForConnectingPlayers(); //Get input from clients
+	updateClientsLoop(); //Notify clients
 
 	//Primary logic loop
 	while (running)
@@ -179,7 +189,6 @@ void Server::run()
 		{
 			
 			updateGame(); //Update game
-			updateClients(); //Notify clients
 
 			timer.restart();
 		}
