@@ -14,6 +14,9 @@
 //Game related objects
 #include "Ball.h"
 
+//Server
+#include "Server.h"
+
 void initiateConsole()
 {
     AllocConsole();
@@ -33,7 +36,7 @@ const unsigned int HEIGHT = 400;
 class GameServer
 {
 public:
-    static std::vector<Entity> paddles; //These do not strictly need to be here for more than numbers
+    static std::vector<Entity> paddles; //These do not strictly need to be here for more than number representations
 
     static void gameloop(Ball& ball)
     {
@@ -138,8 +141,11 @@ void networkThread()
 int main()
 {
     initiateConsole();
+    Server server;
 
-    Ball ball(600, 400);
+    server.run();
+
+    /*Ball ball(600, 400);
 
     GameServer::paddles.push_back(Entity());
     GameServer::paddles.push_back(Entity());
@@ -149,7 +155,7 @@ int main()
     std::thread gameThread(GameServer::gameloop, std::ref(ball));
     gameThread.detach();
 
-    networkThread();
+    networkThread();*/
 
     return 0;
 }
