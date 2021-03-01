@@ -39,7 +39,7 @@ private:
 	sf::IpAddress serverIp = "localhost";
 	unsigned short receivePortUDP = 40000; //Offset with player id in setup
 	unsigned short sendPortUDP = 55002;
-	unsigned short sendPortTCP = 55003;
+	unsigned short sendPortTCP = 55009;
 
 	sf::UdpSocket udpSocket;
 	void setupUDP();

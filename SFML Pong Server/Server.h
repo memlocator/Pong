@@ -41,7 +41,7 @@ private:
 	unsigned short recievePortUDP = 55002;
 	unsigned short sendPortUDP = 40000;
 
-	unsigned short receivePortTCP = 55003;
+	unsigned short receivePortTCP = 55009;
 
 	sf::TcpListener tcpListener;
 

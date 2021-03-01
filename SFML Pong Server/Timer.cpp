@@ -8,7 +8,7 @@ Timer::Timer()
 double Timer::timeElapsed() const
 {
 	auto currentTime = high_resolution_clock::now();
-	return std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime).count();
+	return (double)std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - startTime).count();
 }
 void Timer::start()
 {

@@ -27,12 +27,17 @@ void Server::waitForConnectingPlayers()
 	std::cout << "Server is waiting for players..." << std::endl;
 	for (int i = 0; i < 2; i++)
 	{
+		
+
 		//----------------------------------------------Check TCP
 			//Ensure a clean packet.
 		serverPacket.clear();
 
 		tcpListener.accept(tcpSocket);
+
+		std::cout << "Waiting for plr req" << std::endl;
 		tcpSocket.receive(serverPacket);
+		std::cout << "Received plr req" << std::endl;
 
 		//Packet form: NetworkID enum, then the gamestate data.
 		int netIdentifier; //Actually an enum.
@@ -53,6 +58,8 @@ void Server::waitForConnectingPlayers()
 		}
 
 		tcpSocket.disconnect();
+
+		std::cout << "finished loop" << std::endl;
 	}
 
 	std::cout << "Game starting." << std::endl;
@@ -109,37 +116,44 @@ void Server::updateClientsLoop()
 {
 	std::thread netPoll([this]()
 	{
-		while (running)
-		{
+			//Time measurements
+			Timer timer;
+			timer.start();
 
-			if (areAllPlrsConn())
+			while (running)
 			{
-				sf::Packet packet;
-
-				//Should ideally auto select port instead
-				//Update paddle positions
-				packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[0].playerID << paddles[0].getPosition().y;
-				udpSocket.send(packet, connectedClients[1].ip, sendPortUDP + 1);
-
-				packet.clear();
-
-				packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[1].playerID << paddles[1].getPosition().y;
-				udpSocket.send(packet, connectedClients[0].ip, sendPortUDP);
-				//
-
-				//Update ball position
-				packet.clear();
-				packet << (int)NetworkID::BALL_UPDATE << ball.getPosition().x << ball.getPosition().y;
-
-				for (int i = 0; i < connectedClients.size(); i++)
+				if (timer.timeElapsed() > (1000.0 / updatesPerSecond)) //Measured in miliseconds
 				{
-					udpSocket.send(packet, connectedClients[i].ip, sendPortUDP + i);
-				}
-				//
+					timer.restart();
+					if (areAllPlrsConn())
+					{
+						sf::Packet packet;
 
+						//Should ideally auto select port instead
+						//Update paddle positions
+						packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[0].playerID << paddles[0].getPosition().y;
+						udpSocket.send(packet, connectedClients[1].ip, sendPortUDP + 1);
+
+						packet.clear();
+
+						packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[1].playerID << paddles[1].getPosition().y;
+						udpSocket.send(packet, connectedClients[0].ip, sendPortUDP);
+						//
+
+						//Update ball position
+						packet.clear();
+						packet << (int)NetworkID::BALL_UPDATE << ball.getPosition().x << ball.getPosition().y;
+
+						for (int i = 0; i < connectedClients.size(); i++)
+						{
+							udpSocket.send(packet, connectedClients[i].ip, sendPortUDP + i);
+						}
+						//
+					}
+				
+				}
 			}
-		}
-	});
+		});
 	netPoll.detach();
 }
 
@@ -148,6 +162,8 @@ void Server::setupPorts()
 	std::cout << "Initiating server ports." << std::endl;
 	//TCP
 	tcpListener.listen(receivePortTCP);
+	tcpListener.setBlocking(true);
+	tcpSocket.setBlocking(true);
 
 	//UDP
 	udpSocket.bind(recievePortUDP);
@@ -177,8 +193,8 @@ void Server::run()
 	Timer timer;
 	timer.start();
 
-	initUDPThread();
 	waitForConnectingPlayers(); //Get input from clients
+	initUDPThread();
 	updateClientsLoop(); //Notify clients
 
 	//Primary logic loop

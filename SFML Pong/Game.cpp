@@ -130,6 +130,9 @@ void Game::getPlayerIndex()
     socket.receive(packet);
     packet >> playerID;
 
+    bool val = socket.isBlocking();
+    std::cout << "isBlocking " << val << std::endl;
+
     std::cout << "I have client id " << playerID << std::endl;
 
     socket.disconnect();
