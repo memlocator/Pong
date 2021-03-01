@@ -7,10 +7,10 @@ void Ball::resetPosition()
 	bounce({ 1,0 });
 }
 
-Ball::Ball(float windowWidth, float windowHeight)
+Ball::Ball(float windowWidth, float windowHeight, float speed)
 	:windowWidth(windowWidth), windowHeight(windowHeight)
 {
-
+	this->speedMultiplier = speed;
 }
 
 void Ball::update()
@@ -46,3 +46,5 @@ void Ball::bounce(sf::Vector2f normal)
 
 	this->setVelocity(reflectionVec);
 }
+
+

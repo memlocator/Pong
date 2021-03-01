@@ -25,6 +25,11 @@ void Entity::setSize(sf::Vector2f size)
 	renderRectangle.setSize(size);
 }
 
+void Entity::setDeltaY(float val)
+{
+	frameDeltaY = val;
+}
+
 sf::Vector2f Entity::getPosition()
 {
 	return renderRectangle.getPosition();
@@ -40,6 +45,11 @@ sf::Vector2f Entity::getSize()
 	return renderRectangle.getSize();
 }
 
+float Entity::getDeltaY()
+{
+	return frameDeltaY;
+}
+
 bool Entity::isCollidingWith(Entity& otherEntity)
 {
 	sf::Vector2f otherPos = otherEntity.getPosition();
@@ -53,6 +63,12 @@ bool Entity::isCollidingWith(Entity& otherEntity)
 void Entity::update()
 {
 	move(velocity);
+}
+
+void Entity::normalizeVelocity()
+{
+	float len = sqrtf((velocity.x * velocity.x) + (velocity.y * velocity.y));
+	velocity = sf::Vector2f(velocity.x / len, velocity.y / len) * speedMultiplier;
 }
 
 void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -7,7 +7,12 @@ void Server::updateGame()
 	for (auto paddle : paddles)
 	{
 		if (paddle.isCollidingWith(ball))
+		{
 			ball.bounce({ 1,0 });
+			ball.setVelocity(ball.getVelocity() + sf::Vector2f{ 0, -paddle.getDeltaY()/2.f });
+			ball.normalizeVelocity();
+			
+		}
 	}
 }
 
@@ -20,6 +25,7 @@ void Server::createArena()
 	ball.setPosition({ 200,200 });
 	ball.setSize({ 5,5 });
 	ball.setVelocity({ 2.f, 0.85f });
+	ball.normalizeVelocity();
 }
 
 void Server::waitForConnectingPlayers()
@@ -34,6 +40,7 @@ void Server::waitForConnectingPlayers()
 		serverPacket.clear();
 
 		tcpListener.accept(tcpSocket);
+		std::cout << "accepted con" << std::endl;
 
 		std::cout << "Waiting for plr req" << std::endl;
 		tcpSocket.receive(serverPacket);
@@ -51,7 +58,7 @@ void Server::waitForConnectingPlayers()
 			serverPacket << ++nrOfPlayers;
 			tcpSocket.send(serverPacket);
 
-			connectedClients.push_back({ nrOfPlayers, tcpSocket.getRemoteAddress() });
+			connectedPlayers.push_back({ nrOfPlayers, tcpSocket.getRemoteAddress() });
 
 			std::cout << tcpSocket.getRemoteAddress() << " connected, " << nrOfPlayers + 1 << " players now." << std::endl;
 			break;
@@ -92,6 +99,7 @@ void Server::initUDPThread()
 						float paddleYPos = -1.f;
 						if (serverPacket >> playerID >> paddleYPos)
 						{
+							paddles[playerID].setDeltaY(paddles[playerID].getPosition().y - paddleYPos);
 							paddles[playerID].setPosition({ paddles[playerID].getPosition().x, paddleYPos });
 						}
 
@@ -131,22 +139,22 @@ void Server::updateClientsLoop()
 
 						//Should ideally auto select port instead
 						//Update paddle positions
-						packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[0].playerID << paddles[0].getPosition().y;
-						udpSocket.send(packet, connectedClients[1].ip, sendPortUDP + 1);
+						packet << (int)NetworkID::PADDLE_UPDATE << connectedPlayers[0].playerID << paddles[0].getPosition().y;
+						udpSocket.send(packet, connectedPlayers[1].ip, sendPortUDP + 1);
 
 						packet.clear();
 
-						packet << (int)NetworkID::PADDLE_UPDATE << connectedClients[1].playerID << paddles[1].getPosition().y;
-						udpSocket.send(packet, connectedClients[0].ip, sendPortUDP);
+						packet << (int)NetworkID::PADDLE_UPDATE << connectedPlayers[1].playerID << paddles[1].getPosition().y;
+						udpSocket.send(packet, connectedPlayers[0].ip, sendPortUDP);
 						//
 
 						//Update ball position
 						packet.clear();
 						packet << (int)NetworkID::BALL_UPDATE << ball.getPosition().x << ball.getPosition().y;
 
-						for (int i = 0; i < connectedClients.size(); i++)
+						for (int i = 0; i < connectedPlayers.size(); i++)
 						{
-							udpSocket.send(packet, connectedClients[i].ip, sendPortUDP + i);
+							udpSocket.send(packet, connectedPlayers[i].ip, sendPortUDP + i);
 						}
 						//
 					}
@@ -177,7 +185,7 @@ bool Server::areAllPlrsConn()
 }
 
 Server::Server()
-	:ball(600, 400)
+	:ball(600, 400, 2.f)
 {
 }
 

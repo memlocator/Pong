@@ -8,8 +8,9 @@ private:
 
 	void resetPosition();
 public:
-	Ball(float windowWidth, float windowHeight);
+	Ball(float windowWidth, float windowHeight, float speed);
 	void update();
 	void bounce(sf::Vector2f normal);
+	
 
 };

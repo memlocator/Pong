@@ -36,7 +36,7 @@ private:
 	Ball ball;
 
 	//Network
-	std::vector<ConnectedPlayer> connectedClients;
+	std::vector<ConnectedPlayer> connectedPlayers;
 
 	unsigned short recievePortUDP = 55002;
 	unsigned short sendPortUDP = 40000;
