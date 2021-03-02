@@ -151,9 +151,10 @@
 //    }
 //}
 
-int main()
+int main(int argc, char** argv)
 {
-    Game game;
+    std::string binaryPath = argv[0];
+    Game game(binaryPath);
     game.run();
 
     //int localPlayerIndex = getPlayerNum();

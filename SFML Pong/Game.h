@@ -16,6 +16,7 @@
 #include <string>
 #include <iostream>
 #include <thread>
+#include <fstream>
 #include "../SFML Pong Server/NetworkEnums.h"
 
 class Game
@@ -35,8 +36,10 @@ private:
 
 	int updatesPerSecond = 60;
 
+	std::string binaryPath = "";
+
 	//Network
-	sf::IpAddress serverIp = "localhost";
+	sf::IpAddress serverIp = "";
 	unsigned short receivePortUDP = 40000; //Offset with player id in setup
 	unsigned short sendPortUDP = 55002;
 	unsigned short sendPortTCP = 55009;
@@ -52,8 +55,10 @@ private:
 	void updateElements();
 	void drawElements();
 	void getPlayerIndex();
+	void getFolderPath();
+	void setIP();
 public:
-	Game();
+	Game(std::string binaryPath);
 	void run();
 
 };

@@ -78,8 +78,6 @@ void Game::handleInput()
                 paddles[playerID].setVelocity(paddles[playerID].getVelocity() + sf::Vector2f(0, -paddleVelocity));
             if (event.key.code == sf::Keyboard::Down)
                 paddles[playerID].setVelocity(paddles[playerID].getVelocity() + sf::Vector2f(0, paddleVelocity));
-
-            //paddle2.setPosition(sendData({ paddle2.getPosition().x, paddles[playerID].getPosition().y }));
         }
         if (event.type == sf::Event::KeyReleased)
         {
@@ -98,7 +96,8 @@ void Game::createArena()
 {
     paddles.push_back(Entity());
     paddles.push_back(Entity());
-    paddles.at(1).setPosition({ 600 - paddles.at(1).getSize().x, 0 });
+    paddles.at(0).setPosition({ 30.f, 0 });
+    paddles.at(1).setPosition({ 600 - paddles.at(1).getSize().x - 30.f, 0 });
 
     ball.setSize({ 5,5 });
 }
@@ -130,22 +129,45 @@ void Game::getPlayerIndex()
     socket.receive(packet);
     packet >> playerID;
 
-    bool val = socket.isBlocking();
-    std::cout << "isBlocking " << val << std::endl;
-
     std::cout << "I have client id " << playerID << std::endl;
 
     socket.disconnect();
 }
 
-Game::Game()
-    :window(sf::VideoMode(width, height), "Pong")
+void Game::getFolderPath()
+{
+    size_t slashIndex = binaryPath.find_last_of('\\');
+    binaryPath = binaryPath.substr(0, slashIndex);
+}
+
+void Game::setIP()
+{
+    getFolderPath();
+
+    std::ifstream ipFile;
+    ipFile.open(binaryPath + "\\IP.txt");
+    if (ipFile.is_open())
+    {
+        std::string tempIPAddr;
+        ipFile >> tempIPAddr;
+        serverIp = sf::IpAddress(tempIPAddr);
+        std::cout << tempIPAddr << std::endl;
+        ipFile.close();
+    }
+    else
+        std::cout << "Failed to open IP file, defaulting to localhost." << std::endl;
+}
+
+Game::Game(std::string binaryPath)
+    :window(sf::VideoMode(width, height), "Pong - awaiting server handshake"), binaryPath(binaryPath)
 {
     window.setKeyRepeatEnabled(false);
 }
 
 void Game::run()
 {
+    setIP();
+
     createArena();
     getPlayerIndex();
     setupUDP();
@@ -155,7 +177,7 @@ void Game::run()
     timer.start();
 
     //Change title for window
-    window.setTitle(" Pong client " + std::to_string(playerID));
+    window.setTitle(" Pong Client " + std::to_string(playerID));
     pollUDP();
 
     while (window.isOpen()) //Primary game, game and logic loop

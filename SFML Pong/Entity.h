@@ -14,11 +14,12 @@ protected:
 	sf::RectangleShape renderRectangle;
 	void move(sf::Vector2f offset);
 
-	float frameDeltaY = 0;
+	float frameDeltaY = 0.f;
 	float speedMultiplier = 0.5f;
+	float windowHeight, windowWidth = 0.f;
 public:
 	//Constructor
-	Entity();
+	Entity(float windowWidth = 600.f, float windowHeight = 400.f);
 
 	//Setters
 	void setPosition(sf::Vector2f pos);

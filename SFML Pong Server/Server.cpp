@@ -4,14 +4,20 @@ void Server::updateGame()
 {
 	ball.update();
 
-	for (auto paddle : paddles)
+	for (int i = 0; i < paddles.size(); i++)
 	{
-		if (paddle.isCollidingWith(ball))
+		if (paddles[i].isCollidingWith(ball))
 		{
-			ball.bounce({ 1,0 });
-			ball.setVelocity(ball.getVelocity() + sf::Vector2f{ 0, -paddle.getDeltaY()/2.f });
+			//Identify normal direction of paddle
+			int mult = 1; //Left paddle
+			if (i == 0)
+				mult = -1; //Right paddle
+			//
+
+			ball.bounce({ 1.f, 0.f });
+			ball.setVelocity(ball.getVelocity() - sf::Vector2f(0, paddles[i].getDeltaY()*0.25f));
+			ball.setPosition(ball.getPosition() - sf::Vector2f(paddles[i].getSize().x * mult, 0));
 			ball.normalizeVelocity();
-			
 		}
 	}
 }
@@ -20,7 +26,8 @@ void Server::createArena()
 {
 	paddles.push_back(Entity());
 	paddles.push_back(Entity());
-	paddles.at(1).setPosition({ 600 - paddles.at(1).getSize().x, 0 });
+	paddles.at(0).setPosition({ 30.f, 0 });
+	paddles.at(1).setPosition({ 600 - paddles.at(1).getSize().x - 30.f, 0 });
 
 	ball.setPosition({ 200,200 });
 	ball.setSize({ 5,5 });
@@ -33,18 +40,12 @@ void Server::waitForConnectingPlayers()
 	std::cout << "Server is waiting for players..." << std::endl;
 	for (int i = 0; i < 2; i++)
 	{
-		
-
 		//----------------------------------------------Check TCP
-			//Ensure a clean packet.
+		//Ensure a clean packet.
 		serverPacket.clear();
 
 		tcpListener.accept(tcpSocket);
-		std::cout << "accepted con" << std::endl;
-
-		std::cout << "Waiting for plr req" << std::endl;
 		tcpSocket.receive(serverPacket);
-		std::cout << "Received plr req" << std::endl;
 
 		//Packet form: NetworkID enum, then the gamestate data.
 		int netIdentifier; //Actually an enum.
@@ -65,8 +66,6 @@ void Server::waitForConnectingPlayers()
 		}
 
 		tcpSocket.disconnect();
-
-		std::cout << "finished loop" << std::endl;
 	}
 
 	std::cout << "Game starting." << std::endl;
@@ -110,14 +109,6 @@ void Server::initUDPThread()
 			}
 		});
 	netPoll.detach();
-}
-
-int other(int n)
-{
-	if (n == 1)
-		return 0;
-	else
-		return 1;
 }
 
 void Server::updateClientsLoop()

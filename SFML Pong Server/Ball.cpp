@@ -4,6 +4,10 @@
 void Ball::resetPosition()
 {
 	setPosition({ windowWidth / 2, windowHeight / 2 });
+
+	//Reset velocity of ball, important in case it is moving at steep angles.
+	setVelocity({ getVelocity().x, 0.85f });
+
 	bounce({ 1,0 });
 }
 
@@ -42,7 +46,7 @@ void Ball::bounce(sf::Vector2f normal)
 	float dotProduct = getVelocity().x * normal.x + getVelocity().y * normal.y;
 
 	//Reflect over normal
-	sf::Vector2f reflectionVec = getVelocity() - 2 * dotProduct * normal;//getVelocity() - 2 * dotProduct * normal;
+	sf::Vector2f reflectionVec = getVelocity() - 2 * dotProduct * normal;
 
 	this->setVelocity(reflectionVec);
 }

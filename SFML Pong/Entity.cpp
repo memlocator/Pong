@@ -1,7 +1,7 @@
 #include "Entity.h"
 
-Entity::Entity()
-	:renderRectangle(sf::Vector2f(5,25))
+Entity::Entity(float windowWidth, float windowHeight)
+	:renderRectangle(sf::Vector2f(5,25)), windowWidth(windowWidth), windowHeight(windowHeight)
 {
 }
 
@@ -62,7 +62,15 @@ bool Entity::isCollidingWith(Entity& otherEntity)
 
 void Entity::update()
 {
-	move(velocity);
+	bool validMove = false;
+
+	//Top and bottom bounds check
+	if (renderRectangle.getPosition().y + velocity.y > 0.f
+		&& renderRectangle.getPosition().y + renderRectangle.getSize().y + velocity.y < windowHeight)
+		validMove = true;
+
+	if (validMove)
+		move(velocity);
 }
 
 void Entity::normalizeVelocity()
