@@ -16,3 +16,7 @@ Begränsingar:
 	Skulle vilja abstrahera bort sockets mm och implementera ett event subscription system, (observern pattern) 
 	där de intresserade objekten notifieras när något med nätverket händer. Kan ju även diskutera hur man kan sortera huruvida eventet är relevant
 	eller inte.
+
+- Skriva in IP att connecta tll i spelet
+
+- Välja port för server när man startar den
