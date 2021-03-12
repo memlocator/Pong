@@ -7,7 +7,7 @@ Begränsingar:
 	Fungerar dock eftersom vi vet att maxantalet connections är lågt.
 	
 - NAT (network address translation) och portar
-	Normalt sett så måste man köra hole punching för att få portarna att fungera mellan server och klient pga NAT,
+	Normalt sett så måste man köra hole punching för att få portarna att fungera mellan klient och klient pga NAT,
 	men eftersom klienten redan skickat data till servern via UDP så tas även data mot från servern utan port forwarding.
 	
 	Skulle vilja att systemet väljer en dynamisk port för att ta emot data på servern från.
