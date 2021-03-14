@@ -11,6 +11,9 @@ Begränsingar:
 	men eftersom klienten redan skickat data till servern via UDP så tas även data mot från servern utan port forwarding.
 	
 	Skulle vilja att systemet väljer en dynamisk port för att ta emot data på servern från.
+
+	Skulle vilja jobba med UPnP, istället för att behöva port forwarding.
+	Kunde dock inte hitta möjligheten för det i min router.
 	
 - Nätverkslagret
 	Skulle vilja abstrahera bort sockets mm och implementera ett event subscription system, (observern pattern) 
